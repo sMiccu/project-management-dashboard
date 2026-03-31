@@ -1,19 +1,24 @@
 import { auth } from "./index";
+import { findUserById } from "@/repositories/user-repository";
 
 export async function getSessionUser() {
   const session = await auth();
   if (!session?.user?.id) return null;
+
+  const dbUser = await findUserById(session.user.id);
+  if (!dbUser) return null;
+
   return {
-    id: session.user.id,
-    name: session.user.name ?? "",
-    email: session.user.email ?? "",
-    role: (session.user as { role?: string }).role ?? "MEMBER",
+    id: dbUser.id,
+    name: dbUser.name,
+    email: dbUser.email,
+    role: dbUser.role,
   };
 }
 
 export async function requireAuth() {
   const user = await getSessionUser();
-  if (!user) throw new Error("認証が必要です");
+  if (!user) throw new Error("セッションが無効です。再ログインしてください。");
   return user;
 }
 
