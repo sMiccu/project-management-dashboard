@@ -4,6 +4,8 @@ import * as React from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const DialogContext = React.createContext<((open: boolean) => void) | null>(null);
+
 interface DialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -20,13 +22,13 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
   if (!open) return null;
 
   return (
-    <>
+    <DialogContext.Provider value={onOpenChange}>
       <div
         className="fixed inset-0 z-50 bg-black/50"
         onClick={() => onOpenChange(false)}
       />
       {children}
-    </>
+    </DialogContext.Provider>
   );
 }
 
@@ -39,6 +41,13 @@ export function DialogContent({
   children: React.ReactNode;
   onClose?: () => void;
 }) {
+  const onOpenChange = React.useContext(DialogContext);
+
+  const handleClose = () => {
+    if (onClose) onClose();
+    else if (onOpenChange) onOpenChange(false);
+  };
+
   return (
     <div
       className={cn(
@@ -47,7 +56,7 @@ export function DialogContent({
       )}
     >
       <button
-        onClick={onClose}
+        onClick={handleClose}
         className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100"
       >
         <X className="h-4 w-4" />

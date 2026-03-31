@@ -234,13 +234,13 @@ function MoneyTab({ project, onSaved }: { project: ProjectView; onSaved: () => v
   return (
     <div className="space-y-4 pt-4">
       <Field label="受注金額">
-        <Input type="number" value={form.orderAmount} onChange={(e) => setForm({ ...form, orderAmount: Number(e.target.value) })} />
+        <MoneyInput value={form.orderAmount} onChange={(v) => setForm({ ...form, orderAmount: v })} />
       </Field>
       <Field label="外注費">
-        <Input type="number" value={form.outsourcingCost} onChange={(e) => setForm({ ...form, outsourcingCost: Number(e.target.value) })} />
+        <MoneyInput value={form.outsourcingCost} onChange={(v) => setForm({ ...form, outsourcingCost: v })} />
       </Field>
       <Field label="経費">
-        <Input type="number" value={form.expense} onChange={(e) => setForm({ ...form, expense: Number(e.target.value) })} />
+        <MoneyInput value={form.expense} onChange={(v) => setForm({ ...form, expense: v })} />
       </Field>
       <Separator />
       <div className="rounded-lg bg-muted/50 p-4 space-y-2">
@@ -514,6 +514,37 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function ErrorMessage({ message }: { message: string }) {
   if (!message) return null;
   return <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">{message}</p>;
+}
+
+function MoneyInput({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const [display, setDisplay] = useState(value.toLocaleString("ja-JP"));
+  const [focused, setFocused] = useState(false);
+
+  React.useEffect(() => {
+    if (!focused) {
+      setDisplay(value.toLocaleString("ja-JP"));
+    }
+  }, [value, focused]);
+
+  return (
+    <Input
+      inputMode="numeric"
+      value={display}
+      onFocus={() => {
+        setFocused(true);
+        setDisplay(value === 0 ? "" : String(value));
+      }}
+      onChange={(e) => {
+        const raw = e.target.value.replace(/[^0-9]/g, "");
+        setDisplay(raw);
+        onChange(raw === "" ? 0 : Number(raw));
+      }}
+      onBlur={() => {
+        setFocused(false);
+        setDisplay(value.toLocaleString("ja-JP"));
+      }}
+    />
+  );
 }
 
 function SaveButton({ loading, onClick }: { loading: boolean; onClick: () => void }) {
