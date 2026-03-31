@@ -7,6 +7,7 @@ services:
       - DATABASE_URL=file:/app/data/app.db
       - NEXTAUTH_SECRET=change-this-to-a-random-secret
       - NEXTAUTH_URL=http://localhost:3000
+      - AUTH_TRUST_HOST=true
     volumes:
       - db-data:/app/data
 
