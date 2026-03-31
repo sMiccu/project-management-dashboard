@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("MEMBER")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  projectMembers   ProjectMember[]
+  phaseAssignments Phase[]
+  activityLogs     ActivityLog[]
+
+  @@map("users")
+}
+
+model Project {
+  id              String   @id @default(cuid())
+  companyName     String   @map("company_name")
+  projectName     String   @map("project_name")
+  status          String   @default("NOT_STARTED")
+  contractType    String?  @map("contract_type")
+  orderAmount     Int      @default(0) @map("order_amount")
+  outsourcingCost Int      @default(0) @map("outsourcing_cost")
+  expense         Int      @default(0) @map("expense")
+  googleDriveUrl  String?  @map("google_drive_url")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  members      ProjectMember[]
+  phases       Phase[]
+  activityLogs ActivityLog[]
+
+  @@map("projects")
+}
+
+model ProjectMember {
+  projectId String @map("project_id")
+  userId    String @map("user_id")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, userId])
+  @@map("project_members")
+}
+
+model PhaseMaster {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  defaultOrder Int      @map("default_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  phases Phase[]
+
+  @@map("phase_masters")
+}
+
+model Phase {
+  id            String    @id @default(cuid())
+  projectId     String    @map("project_id")
+  phaseMasterId String    @map("phase_master_id")
+  status        String    @default("NOT_STARTED")
+  dueDate       DateTime? @map("due_date")
+  assigneeId    String?   @map("assignee_id")
+  orderIndex    Int       @map("order_index")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  phaseMaster PhaseMaster @relation(fields: [phaseMasterId], references: [id])
+  assignee    User?       @relation(fields: [assigneeId], references: [id])
+
+  @@map("phases")
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  projectId String   @map("project_id")
+  userId    String   @map("user_id")
+  action    String
+  field     String?
+  oldValue  String?  @map("old_value")
+  newValue  String?  @map("new_value")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("activity_logs")
+}
