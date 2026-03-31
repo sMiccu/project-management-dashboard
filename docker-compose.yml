@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=file:/app/data/app.db
+      - NEXTAUTH_SECRET=change-this-to-a-random-secret
+      - NEXTAUTH_URL=http://localhost:3000
+    volumes:
+      - db-data:/app/data
+
+volumes:
+  db-data:
