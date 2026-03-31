@@ -34,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { MoneyInput } from "@/components/ui/money-input";
 
 function formatCurrency(n: number) {
   return `¥${n.toLocaleString("ja-JP")}`;
@@ -514,37 +515,6 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function ErrorMessage({ message }: { message: string }) {
   if (!message) return null;
   return <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">{message}</p>;
-}
-
-function MoneyInput({ value, onChange }: { value: number; onChange: (v: number) => void }) {
-  const [display, setDisplay] = useState(value.toLocaleString("ja-JP"));
-  const [focused, setFocused] = useState(false);
-
-  React.useEffect(() => {
-    if (!focused) {
-      setDisplay(value.toLocaleString("ja-JP"));
-    }
-  }, [value, focused]);
-
-  return (
-    <Input
-      inputMode="numeric"
-      value={display}
-      onFocus={() => {
-        setFocused(true);
-        setDisplay(value === 0 ? "" : String(value));
-      }}
-      onChange={(e) => {
-        const raw = e.target.value.replace(/[^0-9]/g, "");
-        setDisplay(raw);
-        onChange(raw === "" ? 0 : Number(raw));
-      }}
-      onBlur={() => {
-        setFocused(false);
-        setDisplay(value.toLocaleString("ja-JP"));
-      }}
-    />
-  );
 }
 
 function SaveButton({ loading, onClick }: { loading: boolean; onClick: () => void }) {

@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MoneyInput } from "@/components/ui/money-input";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -130,7 +131,7 @@ export function ProjectCreateDialog({ open, onOpenChange, onCreated }: Props) {
           </div>
 
           <Field label="受注金額">
-            <Input type="number" value={form.orderAmount} onChange={(e) => setForm({ ...form, orderAmount: Number(e.target.value) })} />
+            <MoneyInput value={form.orderAmount} onChange={(v) => setForm({ ...form, orderAmount: v })} />
           </Field>
 
           <Field label="担当者">
