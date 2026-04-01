@@ -35,11 +35,26 @@ function toProjectView(raw: Awaited<ReturnType<typeof projectRepo.findProjectByI
   };
 }
 
+function getNearestDueDate(project: ProjectView): number {
+  const active = project.phases
+    .filter((p) => p.status !== "COMPLETED" && p.dueDate)
+    .map((p) => new Date(p.dueDate!).getTime());
+  if (active.length === 0) return Infinity;
+  return Math.min(...active);
+}
+
 export async function getProjects(
   filters: projectRepo.ProjectFilters
 ): Promise<ProjectView[]> {
   const rows = await projectRepo.findProjects(filters);
-  return rows.map((r) => toProjectView(r)!);
+  const projects = rows.map((r) => toProjectView(r)!);
+
+  if (filters.sortBy === "due_date" && filters.sortOrder) {
+    const dir = filters.sortOrder === "asc" ? 1 : -1;
+    projects.sort((a, b) => (getNearestDueDate(a) - getNearestDueDate(b)) * dir);
+  }
+
+  return projects;
 }
 
 export async function getProjectById(

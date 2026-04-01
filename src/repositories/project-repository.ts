@@ -32,15 +32,10 @@ export async function findProjects(filters: ProjectFilters) {
     where.members = { some: { userId: filters.memberId } };
   }
 
-  const orderBy =
-    filters.sortBy === "due_date"
-      ? { updatedAt: filters.sortOrder ?? "desc" }
-      : { updatedAt: filters.sortOrder ?? "desc" };
-
   return prisma.project.findMany({
     where,
     include: projectInclude,
-    orderBy: orderBy as Record<string, string>,
+    orderBy: { updatedAt: "desc" },
   });
 }
 

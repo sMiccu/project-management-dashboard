@@ -34,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { MoneyInput } from "@/components/ui/money-input";
 
 function formatCurrency(n: number) {
   return `¥${n.toLocaleString("ja-JP")}`;
@@ -234,13 +235,13 @@ function MoneyTab({ project, onSaved }: { project: ProjectView; onSaved: () => v
   return (
     <div className="space-y-4 pt-4">
       <Field label="受注金額">
-        <Input type="number" value={form.orderAmount} onChange={(e) => setForm({ ...form, orderAmount: Number(e.target.value) })} />
+        <MoneyInput value={form.orderAmount} onChange={(v) => setForm({ ...form, orderAmount: v })} />
       </Field>
       <Field label="外注費">
-        <Input type="number" value={form.outsourcingCost} onChange={(e) => setForm({ ...form, outsourcingCost: Number(e.target.value) })} />
+        <MoneyInput value={form.outsourcingCost} onChange={(v) => setForm({ ...form, outsourcingCost: v })} />
       </Field>
       <Field label="経費">
-        <Input type="number" value={form.expense} onChange={(e) => setForm({ ...form, expense: Number(e.target.value) })} />
+        <MoneyInput value={form.expense} onChange={(v) => setForm({ ...form, expense: v })} />
       </Field>
       <Separator />
       <div className="rounded-lg bg-muted/50 p-4 space-y-2">

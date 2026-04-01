@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/table";
 import { ProjectSheet } from "@/components/projects/project-sheet";
 import { ProjectCreateDialog } from "@/components/projects/project-create-dialog";
+import { PhaseMasterDialog } from "@/components/projects/phase-master-dialog";
 
 function isPhaseOverdue(phase: PhaseView): boolean {
   if (phase.status === "COMPLETED" || !phase.dueDate) return false;
@@ -101,6 +102,7 @@ export function Dashboard() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const [phaseMasterOpen, setPhaseMasterOpen] = useState(false);
   const [seeding, setSeeding] = useState(false);
 
   const { data: users = [] } = useUsers();
@@ -194,6 +196,11 @@ export function Dashboard() {
             <Button variant="outline" size="sm" onClick={handleSeed} disabled={seeding}>
               {seeding ? "投入中…" : "デモデータ投入"}
             </Button>
+            {isAdmin && (
+              <Button variant="outline" size="sm" onClick={() => setPhaseMasterOpen(true)}>
+                フェーズ管理
+              </Button>
+            )}
             <Button size="sm" onClick={() => setCreateOpen(true)}>
               <Plus className="mr-1 h-4 w-4" />新規案件
             </Button>
@@ -288,6 +295,11 @@ export function Dashboard() {
         open={createOpen}
         onOpenChange={setCreateOpen}
         onCreated={() => refetch()}
+      />
+
+      <PhaseMasterDialog
+        open={phaseMasterOpen}
+        onOpenChange={setPhaseMasterOpen}
       />
     </div>
   );
